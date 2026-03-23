@@ -13,6 +13,7 @@
  * - Text input fallback when Recognition Service is unavailable
  */
 import { useState, useRef, useEffect, useCallback } from "react"
+import { GAME_CONSTANTS } from "@hello-weekend/shared"
 import { useStateSync, useDispatchThunk } from "../hooks/useVGFState"
 
 // Try to load Recognition Service SDK synchronously — may not be available
@@ -108,7 +109,7 @@ export function PlayingController() {
             const client = createClientWithBuilder((builder: any) =>
                 builder
                     .stage(import.meta.env.VITE_RECOGNITION_STAGE ?? "dev")
-                    .gameId("hello-weekend")
+                    .gameId(GAME_CONSTANTS.GAME_ID)
                     .asrRequestConfig({
                         provider: "deepgram",
                         model: "nova-3",
@@ -120,7 +121,7 @@ export function PlayingController() {
                     })
                     .gameContext({
                         type: RecognitionContextTypeV1.GAME_CONTEXT,
-                        gameId: "hello-weekend",
+                        gameId: GAME_CONSTANTS.GAME_ID,
                         gamePhase: "playing",
                         slotMap: { answer: hintKeywords },
                     })

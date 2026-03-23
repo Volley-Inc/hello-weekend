@@ -8,7 +8,7 @@
  * volley_hub_session_id param before PlatformProvider renders.
  */
 import type { ReactNode } from "react"
-import { ensureLocalHubSessionId } from "@hello-weekend/shared"
+import { ensureLocalHubSessionId, GAME_CONSTANTS } from "@hello-weekend/shared"
 import { getSessionIdFromUrl } from "./utils/params"
 import { VGFControllerProvider } from "./providers/VGFControllerProvider"
 import { PhaseRouter } from "./components/PhaseRouter"
@@ -27,7 +27,7 @@ function MaybePlatformProvider({ children }: { children: ReactNode }) {
         return (
             <PlatformProvider
                 options={{
-                    gameId: "hello-weekend",
+                    gameId: GAME_CONSTANTS.GAME_ID,
                     appVersion: "0.1.0",
                     stage: STAGE,
                 }}
