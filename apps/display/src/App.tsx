@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { SceneRouter } from "./components/SceneRouter"
 import { VGFDisplayProvider } from "./providers/VGFDisplayProvider"
 import { detectPlatform, isTV } from "./utils/detectPlatform"
-import { ensureLocalHubSessionId } from "@hello-weekend/shared"
+import { ensureLocalHubSessionId, GAME_CONSTANTS } from "@hello-weekend/shared"
 
 const stage = import.meta.env.VITE_STAGE ?? "staging"
 
@@ -23,7 +23,7 @@ function MaybePlatformProvider({ children }: { children: ReactNode }) {
     return (
         <PlatformProvider
             options={{
-                gameId: "hello-weekend",
+                gameId: GAME_CONSTANTS.GAME_ID,
                 appVersion: "0.1.0",
                 stage,
                 screensaverPrevention: { autoStart: true },
