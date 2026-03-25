@@ -10,7 +10,7 @@ export function PlayingScene({ state }: PlayingSceneProps) {
     const hasAnswerFeedback = state.lastAnswerCorrect !== null
 
     return (
-        <div style={{
+        <div data-phase="playing" style={{
             display: "flex",
             flexDirection: "column",
             height: "100vh",
@@ -26,7 +26,7 @@ export function PlayingScene({ state }: PlayingSceneProps) {
                 alignItems: "center",
                 marginBottom: "2rem",
             }}>
-                <div style={{
+                <div data-score={state.score} style={{
                     fontSize: "1.5rem",
                     color: "#667eea",
                     fontWeight: "bold",

@@ -16,6 +16,7 @@ export function LobbyController() {
 
     return (
         <div
+            data-phase="lobby"
             style={{
                 padding: 32,
                 fontFamily: "sans-serif",
@@ -31,6 +32,7 @@ export function LobbyController() {
             <h1 style={{ fontSize: 28, margin: 0 }}>Connected to Hello Weekend!</h1>
             <p style={{ color: "#666", margin: 0 }}>You are in the lobby. Press the button below to start.</p>
             <button
+                data-action="start-game"
                 onClick={handleStartGame}
                 style={{
                     fontSize: 24,

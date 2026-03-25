@@ -235,6 +235,7 @@ export function PlayingController() {
 
     return (
         <div
+            data-phase="playing"
             style={{
                 padding: 24,
                 fontFamily: "sans-serif",
@@ -336,6 +337,7 @@ export function PlayingController() {
                     />
                     <button
                         type="submit"
+                        data-action="submit-answer"
                         style={{
                             padding: "12px 24px",
                             fontSize: 16,

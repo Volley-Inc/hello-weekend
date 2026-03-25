@@ -20,6 +20,7 @@ export function GameOverController() {
 
     return (
         <div
+            data-phase="game-over"
             style={{
                 padding: 32,
                 fontFamily: "sans-serif",
