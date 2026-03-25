@@ -12,8 +12,8 @@
     },
     "dependencies": {
         "@hello-weekend/shared": "workspace:*",
-        "@volley/platform-sdk": "^7.46.0",
-        "@volley/vgf": "^4.10.0",
+        "@volley/platform-sdk": "^7.47.3",
+        "@volley/vgf": "^4.13.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },

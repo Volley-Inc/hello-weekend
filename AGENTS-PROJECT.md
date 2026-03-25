@@ -60,8 +60,8 @@ pnpm dev
 
 ## Architecture
 
-- **Framework:** VGF (Volley Games Framework) v4.10.0+, using **WGFServer** (NOT VGFServer)
-- **Platform SDK:** v7.46.0 — MaybePlatformProvider, ensureLocalHubSessionId, useDeviceInfo
+- **Framework:** VGF (Volley Games Framework) v4.13.0+, using **WGFServer** (NOT VGFServer)
+- **Platform SDK:** v7.47.3 — MaybePlatformProvider, ensureLocalHubSessionId, useDeviceInfo
 - **Recognition Service:** @volley/recognition-client-sdk — voice input with text fallback
 - **State pattern:** WoF (Wheel of Fortune) — nextPhase field + CLEAR_NEXT_PHASE in every onBegin
 - **Phase transitions:** NEVER modify `state.phase` directly. Use `TRANSITION_TO_PHASE` thunk → `SET_NEXT_PHASE` reducer
