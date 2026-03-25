@@ -6,7 +6,7 @@ interface GameOverSceneProps {
 
 export function GameOverScene({ state }: GameOverSceneProps) {
     return (
-        <div style={{
+        <div data-phase="game-over" style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -27,7 +27,7 @@ export function GameOverScene({ state }: GameOverSceneProps) {
                 Game Over!
             </h1>
 
-            <div style={{
+            <div data-score={state.score} style={{
                 fontSize: "2.5rem",
                 fontWeight: "bold",
                 color: "#667eea",

@@ -235,6 +235,7 @@ export function PlayingController() {
 
     return (
         <div
+            data-phase="playing"
             style={{
                 padding: 24,
                 fontFamily: "sans-serif",
@@ -252,7 +253,7 @@ export function PlayingController() {
             </div>
 
             {/* Question */}
-            <h2 style={{ fontSize: 22, margin: "8px 0", maxWidth: 400 }}>
+            <h2 data-question={question} style={{ fontSize: 22, margin: "8px 0", maxWidth: 400 }}>
                 {question || "Waiting for question..."}
             </h2>
 
@@ -336,6 +337,7 @@ export function PlayingController() {
                     />
                     <button
                         type="submit"
+                        data-action="submit-answer"
                         style={{
                             padding: "12px 24px",
                             fontSize: 16,

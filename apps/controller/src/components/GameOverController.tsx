@@ -20,6 +20,7 @@ export function GameOverController() {
 
     return (
         <div
+            data-phase="game-over"
             style={{
                 padding: 32,
                 fontFamily: "sans-serif",
@@ -37,6 +38,7 @@ export function GameOverController() {
                 Score: {score} / {totalQuestions}
             </p>
             <button
+                data-action="play-again"
                 onClick={handlePlayAgain}
                 style={{
                     fontSize: 22,

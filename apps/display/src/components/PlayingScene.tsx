@@ -10,7 +10,7 @@ export function PlayingScene({ state }: PlayingSceneProps) {
     const hasAnswerFeedback = state.lastAnswerCorrect !== null
 
     return (
-        <div style={{
+        <div data-phase="playing" style={{
             display: "flex",
             flexDirection: "column",
             height: "100vh",
@@ -26,7 +26,7 @@ export function PlayingScene({ state }: PlayingSceneProps) {
                 alignItems: "center",
                 marginBottom: "2rem",
             }}>
-                <div style={{
+                <div data-score={state.score} style={{
                     fontSize: "1.5rem",
                     color: "#667eea",
                     fontWeight: "bold",
@@ -50,7 +50,7 @@ export function PlayingScene({ state }: PlayingSceneProps) {
                 justifyContent: "center",
                 gap: "2rem",
             }}>
-                <h2 style={{
+                <h2 data-question={state.currentQuestion} style={{
                     fontSize: "2.5rem",
                     margin: 0,
                     textAlign: "center",
@@ -62,7 +62,7 @@ export function PlayingScene({ state }: PlayingSceneProps) {
 
                 {/* Answer feedback */}
                 {hasAnswerFeedback && (
-                    <div style={{
+                    <div data-feedback={isCorrect ? "correct" : "incorrect"} style={{
                         padding: "1rem 2rem",
                         borderRadius: "12px",
                         fontSize: "1.5rem",
