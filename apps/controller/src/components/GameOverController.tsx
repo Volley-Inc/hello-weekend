@@ -38,6 +38,7 @@ export function GameOverController() {
                 Score: {score} / {totalQuestions}
             </p>
             <button
+                data-action="play-again"
                 onClick={handlePlayAgain}
                 style={{
                     fontSize: 22,
