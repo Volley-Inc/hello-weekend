@@ -1,7 +1,7 @@
 /**
  * Playwright global teardown — kills the dev processes started by global-setup.
  */
-import { spawn } from "node:child_process";
+import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,19 +11,14 @@ const PID_FILE = path.join(__dirname, ".e2e-pids.json");
 
 function killProcess(pid: number): void {
   const isWindows = process.platform === "win32";
-  if (isWindows) {
-    spawn("taskkill", ["/F", "/T", "/PID", String(pid)], { stdio: "ignore", shell: true });
-  } else {
-    try {
-      // Kill the process group (negative PID)
+  try {
+    if (isWindows) {
+      execSync(`taskkill /F /T /PID ${pid}`, { stdio: "ignore" });
+    } else {
       process.kill(-pid, "SIGTERM");
-    } catch {
-      try {
-        process.kill(pid, "SIGTERM");
-      } catch {
-        // already dead
-      }
     }
+  } catch {
+    // already dead
   }
 }
 

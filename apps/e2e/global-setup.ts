@@ -23,8 +23,9 @@ interface ServerDef {
 
 const servers: ServerDef[] = [
   { name: "server", filter: "@hello-weekend/server", url: "http://127.0.0.1:8090/health" },
-  { name: "display", filter: "@hello-weekend/display", url: "http://127.0.0.1:3000" },
-  { name: "controller", filter: "@hello-weekend/controller", url: "http://127.0.0.1:5174" },
+  // Vite binds to [::1] (IPv6) by default — poll localhost, not 127.0.0.1
+  { name: "display", filter: "@hello-weekend/display", url: "http://localhost:3000" },
+  { name: "controller", filter: "@hello-weekend/controller", url: "http://localhost:5174" },
 ];
 
 async function pollUntilReady(url: string, timeoutMs: number): Promise<void> {

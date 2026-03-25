@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-const DISPLAY_URL = "http://127.0.0.1:3000?sessionId=dev-test";
-const CONTROLLER_URL = "http://127.0.0.1:5174?sessionId=dev-test";
+const DISPLAY_URL = "http://localhost:3000?sessionId=dev-test";
+const CONTROLLER_URL = "http://localhost:5174?sessionId=dev-test";
 const QUESTIONS_PER_ROUND = 5;
 
 /** Timeout for waiting on VGF phase transitions (state sync has latency). */
