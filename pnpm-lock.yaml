@@ -18,11 +18,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@volley/platform-sdk':
-        specifier: ^7.47.3
-        version: 7.47.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^7.50.0
+        version: 7.50.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@volley/recognition-client-sdk':
         specifier: latest
-        version: 0.1.670
+        version: 0.1.707
       '@volley/vgf':
         specifier: ^4.13.0
         version: 4.13.0(eslint@10.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(storybook@9.1.20(@testing-library/dom@10.4.1)(vite@6.4.1(@types/node@22.19.15)(tsx@4.21.0)))(typescript@5.9.3)
@@ -58,8 +58,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@volley/platform-sdk':
-        specifier: ^7.47.3
-        version: 7.47.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^7.50.0
+        version: 7.50.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@volley/vgf':
         specifier: ^4.13.0
         version: 4.13.0(eslint@10.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(storybook@9.1.20(@testing-library/dom@10.4.1)(vite@6.4.1(@types/node@22.19.15)(tsx@4.21.0)))(typescript@5.9.3)
@@ -971,19 +971,31 @@ packages:
   '@volley/logger@1.4.1':
     resolution: {integrity: sha512-guSeoBhLSYrvAuzX8y+qG+Oo0BCxDFJikX+vZcYtm8pWyHDlteSRvgEqaH6yNQkHOzU/QeYmQgz/ZHsOPxOoZQ==}
 
-  '@volley/platform-sdk@7.47.3':
-    resolution: {integrity: sha512-+8xngf7gYmJB2ep75zJiVd/vTrsmb0ASbHMO4Pg6mFvq1VndFzQPtIkXvVz+9/k82CcWixkVPOkM9rG8fCVjaQ==}
+  '@volley/platform-sdk@7.50.0':
+    resolution: {integrity: sha512-dODA/4zISQlA7q4UlFFl08yvnlfURuprjnOcrAQO25AQvfVSJAkEmp0alYZjrlJls5Tl3E87X/DK55iKmmz6eQ==}
     engines: {node: '>=22'}
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@volley/recognition-client-sdk@0.1.670':
-    resolution: {integrity: sha512-OicgULytQuT4cU3SnlBpnZIwu+otgLNrx4dyFQ73lD2iG91/cvePXljGGjIL+nDcXfw2CwQSUx8cecxGe3yBjg==}
+  '@volley/recognition-client-sdk@0.1.707':
+    resolution: {integrity: sha512-mh3P90uiyGVotHNLhxnimrwZ/tzOPcqcxDBAoqo0csEYPpenAVLlWINd9gN/VdrarOKzefqySGLgPxHKHQm4Tg==}
     engines: {node: '>=22.0.0'}
 
-  '@volley/tracking@7.43.0':
-    resolution: {integrity: sha512-1yLnUclXkwnh6B0zWBbHIYBMZLwsiRusXzyA72Oe1rYWiJduvQ+btFnt/YQ4W7jRuTbPuMeCmzpGxowb01fOWw==}
+  '@volley/tracking-client-core@1.0.2':
+    resolution: {integrity: sha512-m95njJaow4JZlRgysHttW/V73QC4J+fBJ4dU5+wPCC27PD5AzFVqLiQ2YBc7rHokk8Gd530jyTi+jw12U0SSfg==}
+
+  '@volley/tracking-client-segment-browser@1.0.3':
+    resolution: {integrity: sha512-8Lr+OHaHcLASWzdms6GUkhPyL+JRQaypkAsQjZowekROCu6AZyLJKBvxpY0VW0bYmFZP4I5KW60aP/fpaLHKuA==}
+
+  '@volley/tracking-schema-vwr@1.2.4':
+    resolution: {integrity: sha512-wZ7h20RzT2BcOJ1tdPYOzR1xb3CXR0/EEqMUMVm9Yb5W72ZmEocncf7FpYnhQ7y/RSApnhNGaRk8arb2fLoBPw==}
+
+  '@volley/tracking-schemas-core@1.0.0':
+    resolution: {integrity: sha512-BsyAPTt2dxeH1OWShW1+XqrATh+uJ1phNAMF2wgSINO+sm7dUn7eAcZaqanrf9eeV82+SLhbvrB+70lq/MDtiA==}
+
+  '@volley/tracking@7.45.0':
+    resolution: {integrity: sha512-fiII8izMvtoWycCSI+p1qJugVlcYDdn5eAeLFeVVGQMzBti9K4Tx0AEY8iukBOfDjmrJfqyS2T6MW0YvvdNsUg==}
     engines: {node: '>=22.0.0', pnpm: '>=9.0.0'}
 
   '@volley/vgf@4.13.0':
@@ -2933,7 +2945,7 @@ snapshots:
     dependencies:
       pino: 9.14.0
 
-  '@volley/platform-sdk@7.47.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@volley/platform-sdk@7.50.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@segment/analytics-next': 1.82.0
       '@types/howler': 2.2.12
@@ -2943,7 +2955,10 @@ snapshots:
       '@types/tizen-tv-webapis': 2.0.9
       '@volley/browser-ipc': 0.0.7
       '@volley/logger': 1.4.1
-      '@volley/tracking': 7.43.0
+      '@volley/tracking': 7.45.0
+      '@volley/tracking-client-core': 1.0.2
+      '@volley/tracking-client-segment-browser': 1.0.3
+      '@volley/tracking-schema-vwr': 1.2.4
       axios: 1.13.6
       axios-retry: 4.5.0(axios@1.13.6)
       howler: 2.2.4
@@ -2956,7 +2971,7 @@ snapshots:
       - debug
       - encoding
 
-  '@volley/recognition-client-sdk@0.1.670':
+  '@volley/recognition-client-sdk@0.1.707':
     dependencies:
       uuid: 11.1.0
       ws: 8.18.3
@@ -2965,7 +2980,25 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@volley/tracking@7.43.0':
+  '@volley/tracking-client-core@1.0.2':
+    dependencies:
+      '@volley/tracking-schemas-core': 1.0.0
+
+  '@volley/tracking-client-segment-browser@1.0.3':
+    dependencies:
+      '@segment/analytics-next': 1.82.0
+      '@volley/tracking-client-core': 1.0.2
+    transitivePeerDependencies:
+      - encoding
+
+  '@volley/tracking-schema-vwr@1.2.4':
+    dependencies:
+      '@volley/tracking-schemas-core': 1.0.0
+      zod: 3.25.76
+
+  '@volley/tracking-schemas-core@1.0.0': {}
+
+  '@volley/tracking@7.45.0':
     dependencies:
       '@volley/logger': 1.4.1
       zod: 3.25.76

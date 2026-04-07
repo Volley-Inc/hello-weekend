@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@hello-weekend/shared": "workspace:*",
-        "@volley/platform-sdk": "^7.47.3",
+        "@volley/platform-sdk": "^7.50.0",
         "@volley/recognition-client-sdk": "latest",
         "@volley/vgf": "^4.13.0",
         "react": "^19.0.0",

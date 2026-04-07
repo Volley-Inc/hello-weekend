@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { useEffect } from "react"
 import { PlatformProvider } from "@volley/platform-sdk/react"
 import { SceneRouter } from "./components/SceneRouter"
 import { VGFDisplayProvider } from "./providers/VGFDisplayProvider"
@@ -31,7 +32,32 @@ function MaybePlatformProvider({ children }: { children: ReactNode }) {
     )
 }
 
+/**
+ * Sends a "close" event to VWR when the Back button is pressed on Fire TV.
+ * This tells VWR to destroy the game iframe and return to Proto-Hub.
+ */
+function useBackButtonClose() {
+    useEffect(() => {
+        if (window.parent === window) return // not in iframe
+
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === "GoBack" || e.key === "XF86Back" || e.key === "Backspace") {
+                e.preventDefault()
+                window.parent.postMessage(
+                    { type: "close", source: "platform-sdk-iframe", args: [] },
+                    "*"
+                )
+            }
+        }
+
+        window.addEventListener("keydown", handler)
+        return () => window.removeEventListener("keydown", handler)
+    }, [])
+}
+
 export function App() {
+    useBackButtonClose()
+
     return (
         <MaybePlatformProvider>
             <VGFDisplayProvider>
