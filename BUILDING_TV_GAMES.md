@@ -2656,6 +2656,7 @@ A consolidated list of every gotcha documented in the learnings system.
 | 16 | **Static import for PlatformProvider** | Use a static `import { PlatformProvider } from "@volley/platform-sdk/react"` — do NOT use `require()`. Dynamic `require()` breaks in production ESM bundles on Fire TV (Chromium 68). Vite tree-shakes unused imports anyway. |
 | 17 | **NPM auth required for @volley packages** | If `pnpm add @volley/vgf` fails with 404/403, run `npm login` first. Packages are on the public npm registry under the Volley org scope. |
 | 18 | **Deepgram API key not set** | If voice input doesn't work in dev, check `.env` for `DEEPGRAM_API_KEY` and check server logs for the Deepgram proxy startup message. |
+| 19 | **Controller `base` path missing** | The controller Vite config MUST set `base: "/controller/"`. Without it, the built HTML references `/assets/` which loads the display app's JS instead of the controller's. QR code scanning will show a blank page or the wrong app. |
 
 ---
 
@@ -3349,18 +3350,18 @@ export default defineConfig(({ mode }) => ({
             },
         },
     },
-    // Base path for deployment (adjust for your CDN/hosting)
-    base: mode === "production"
-        ? "/your-game-controller/latest/"
-        : "/",
+    // CRITICAL: The VGF server serves the controller at /controller/.
+    // Without this, built assets reference /assets/ which loads the
+    // display app's JS instead of the controller's.
+    base: "/controller/",
 }))
 ```
 
 **Key differences from the display Vite config:**
+- **`base: "/controller/"`** — the VGF server mounts the controller app at `/controller/`. Without this, the built HTML references `/assets/` (root) which serves the display app's assets instead. This is the most common controller deployment bug.
 - No `@vitejs/plugin-legacy` (phones have modern browsers, unlike Fire TV)
 - No `target: "chrome68"` (that's a Fire TV constraint)
 - `host: true` so you can test from a real phone on the same network
-- Deployment base path is for the controller, not the display
 
 ### 16.9 Environment Variables
 
