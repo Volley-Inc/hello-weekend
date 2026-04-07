@@ -2390,11 +2390,9 @@ export default defineConfig({
                 "es.array.flat",
                 "es.array.flat-map",
                 "es.object.from-entries",
-                "es.promise.all-settled",
                 "es.string.match-all",
                 "es.string.replace-all",
                 "es.array.at",
-                "web.queue-microtask",
             ],
         }),
     ],
@@ -2427,6 +2425,93 @@ export default defineConfig({
     },
 })
 ```
+
+### Browserslist Configuration
+
+Create a `.browserslistrc` file in your project root so that PostCSS, Autoprefixer, and other CSS tooling know your target environment:
+
+```
+chrome >= 68
+```
+
+This ensures generated CSS avoids features unsupported by Chromium 68 (e.g. newer `color()` functions, `@layer`, etc.).
+
+### Web API Polyfills
+
+Some Web APIs that modern frameworks assume are present do not exist in Chrome 68 (or in TV-specific Chromium forks). Install polyfills for these:
+
+| API | Package | Chrome version added |
+|-----|---------|---------------------|
+| `:focus-visible` CSS pseudo-class | `focus-visible` | Chrome 86 |
+| `ResizeObserver` | `@juggle/resize-observer` | Chrome 64 (but missing in some TV forks) |
+| `IntersectionObserver` | `intersection-observer` | Chrome 58 (but missing in some TV forks) |
+
+`:focus-visible` is **critical** for D-pad focus rings on TV — without it, focus outlines either never appear or appear on every click.
+
+Use conditional imports to avoid shipping polyfill bytes to browsers that don't need them:
+
+```typescript
+// src/polyfills.ts
+import "focus-visible"  // Always safe — CSS-only, no-op on modern browsers
+
+if (!("ResizeObserver" in window)) {
+    await import("@juggle/resize-observer")
+}
+
+if (!("IntersectionObserver" in window)) {
+    await import("intersection-observer")
+}
+```
+
+### Polyfill Entry Point Pattern
+
+Import polyfills **before** any app code. In your `main.tsx`:
+
+```typescript
+// main.tsx
+import "./polyfills"  // Must be first
+import { createRoot } from "react-dom/client"
+import App from "./App"
+
+createRoot(document.getElementById("root")!).render(<App />)
+```
+
+This ensures polyfills are installed before any library code (React, VGF, etc.) checks for their existence.
+
+### Media Format Compatibility
+
+Chrome 68 does **not** support AVIF images or AV1 video codec. Use these formats instead:
+
+| Type | Avoid | Use instead |
+|------|-------|-------------|
+| Images | AVIF | **WebP** (Chrome 32+) or PNG/JPEG |
+| Video | AV1 | **H.264** / VP9 (standard codecs) |
+
+If you use `<picture>` with AVIF sources, always include a WebP or JPEG fallback `<source>`.
+
+### Common Breakages on Chrome 68
+
+These are the most frequently hit runtime errors when deploying modern JS to Chrome 68:
+
+| Error | Fix |
+|-------|-----|
+| `globalThis is not defined` | Add `es.global-this` to `modernPolyfills` |
+| `flat is not a function` | Add `es.array.flat` to `modernPolyfills` |
+| `Object.fromEntries is not a function` | Add `es.object.from-entries` to `modernPolyfills` |
+| `require is not defined` | Use static `import` statements, not dynamic `require()`. Set `transformMixedEsModules: true` in Vite's `commonjsOptions` |
+
+If you see any of these errors in Silk browser DevTools, check your `modernPolyfills` list matches the canonical set above.
+
+### Performance Notes for TV
+
+TV hardware is significantly weaker than desktop or mobile. Keep these constraints in mind:
+
+- **Prefer CSS transforms over layout-thrashing properties.** Use `transform: translateX()` / `scale()` instead of changing `left`, `top`, `width`, `height`. CSS transforms are GPU-composited; layout properties trigger expensive reflows.
+- **Budget for 30 fps on heavy scenes.** Fire TV sticks can't sustain 60 fps during complex animations or transitions. Design animations that look acceptable at 30 fps.
+- **Keep initial JS bundle small.** TV browsers are slow to parse and evaluate JS. Code-split aggressively and lazy-load anything not needed for first paint.
+- **Avoid large image decodes on the main thread.** Prefer pre-sized assets over CSS-resized large images. Use `loading="lazy"` on below-the-fold images.
+
+> **Source:** [Notion — TV App Game Compatibility: Config & Polyfills for Chrome 68](https://www.notion.so/volley/TV-App-Game-Compatibility-Config-Polyfills-for-Chrome-68-26a442bc97138079b6f8fc78520ac37a)
 
 ---
 
