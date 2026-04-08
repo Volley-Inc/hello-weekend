@@ -41,10 +41,10 @@ function useBackButtonClose() {
         if (window.parent === window) return // not in iframe
 
         const handler = (e: KeyboardEvent) => {
-            if (e.key === "GoBack" || e.key === "XF86Back" || e.key === "Backspace") {
+            if (e.key === "GoBack" || e.key === "XF86Back" || e.key === "Backspace" || e.keyCode === 4) {
                 e.preventDefault()
                 window.parent.postMessage(
-                    { type: "close", source: "platform-sdk-iframe", args: [] },
+                    { type: "close", source: "volley" },
                     "*"
                 )
             }
