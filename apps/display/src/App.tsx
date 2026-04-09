@@ -6,7 +6,7 @@ import { VGFDisplayProvider } from "./providers/VGFDisplayProvider"
 import { detectPlatform, isTV } from "./utils/detectPlatform"
 import { ensureLocalHubSessionId, GAME_CONSTANTS } from "@hello-weekend/shared"
 
-const stage = import.meta.env.VITE_STAGE ?? "staging"
+const stage = (import.meta.env.VITE_STAGE ?? "staging") as "dev" | "staging" | "production"
 
 // Inject fallback volley_hub_session_id before any React renders
 ensureLocalHubSessionId(stage)

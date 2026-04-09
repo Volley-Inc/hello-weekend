@@ -14,7 +14,7 @@ import { getSessionIdFromUrl } from "./utils/params"
 import { VGFControllerProvider } from "./providers/VGFControllerProvider"
 import { PhaseRouter } from "./components/PhaseRouter"
 
-const STAGE = import.meta.env.VITE_PLATFORM_SDK_STAGE ?? "dev"
+const STAGE = (import.meta.env.VITE_PLATFORM_SDK_STAGE ?? "dev") as "dev" | "staging" | "production"
 
 // Inject fallback hub session ID before any React rendering
 ensureLocalHubSessionId(STAGE)
