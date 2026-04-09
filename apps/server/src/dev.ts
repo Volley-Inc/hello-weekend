@@ -3,8 +3,9 @@
  * Boots a WGFServer with in-memory storage and stub services.
  *
  * Usage: tsx watch src/dev.ts
- */
+ *
  * @since template v0.2.0
+ */
 import express from "express"
 import { createServer } from "node:http"
 import { existsSync } from "node:fs"
