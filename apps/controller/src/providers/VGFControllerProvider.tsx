@@ -30,7 +30,7 @@ export function VGFControllerProvider({ children, sessionId, serverUrl }: VGFCon
     let deviceId: string | null = null
     try {
         const deviceInfo = useDeviceInfo()
-        deviceId = deviceInfo.getDeviceId()
+        deviceId = deviceInfo.getDeviceId() ?? null
     } catch {
         // Platform SDK not available (PlatformProvider not in tree, etc.)
     }
