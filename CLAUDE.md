@@ -14,4 +14,5 @@ Read and follow the guidelines in these files before starting any task:
 These files contain mandatory requirements for code changes, testing, and verification. Read the first three sections of AGENTS.md completely before writing any code.
 
 **Conditional reading (load only when needed):**
+- **[docs/UPGRADING.md](./docs/UPGRADING.md)** — Read when upgrading VGF, Platform SDK, analytics libraries, or propagating template changes to downstream games.
 - **[AGENTS-RLM.md](./AGENTS-RLM.md)** — Read ONLY when context exceeds ~100K tokens or task requires processing most/all of a large input. Not needed for typical tasks.

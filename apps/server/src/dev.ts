@@ -6,6 +6,8 @@
  *
  * @since template v0.2.0
  */
+// dd-trace MUST be imported before all other modules for monkey-patching
+import "./tracer"
 import express from "express"
 import { createServer } from "node:http"
 import { existsSync } from "node:fs"
@@ -15,6 +17,8 @@ import { Server as SocketIOServer } from "socket.io"
 import { WGFServer, MemoryStorage } from "@volley/vgf/server"
 import { createGameRuleset } from "./ruleset"
 import type { GameServices } from "./services"
+import { TrackingService } from "./tracking"
+import { MetricsService } from "./metrics"
 
 // Load .env file from monorepo root (Node.js 22+ built-in)
 const envPath = resolve(import.meta.dirname ?? ".", "../../..", ".env")
@@ -57,6 +61,8 @@ const io = new SocketIOServer(httpServer, {
 
 const services: GameServices = {
     serverState: new Map(),
+    tracking: new TrackingService(),
+    metrics: new MetricsService(),
 }
 
 const game = createGameRuleset(services)
@@ -83,6 +89,9 @@ app.post("/api/reset-session", (_req, res) => {
     if (storage.doesSessionExist(DEV_SESSION_ID)) {
         storage.deleteSessionById(DEV_SESSION_ID)
     }
+    // Clear server-only state (question bank, tracking timestamps)
+    services.serverState.delete(DEV_SESSION_ID)
+
     storage.createSession({
         sessionId: DEV_SESSION_ID,
         members: {},
@@ -112,6 +121,24 @@ ensureDevSession()
 
 // VGF deletes sessions on client disconnect; re-create every 2s
 setInterval(ensureDevSession, 2000)
+
+// Graceful shutdown — flush analytics and close metrics
+async function shutdown() {
+    logger.info("Shutting down…")
+    try {
+        await services.tracking.flush()
+    } catch (err) {
+        logger.error({ err }, "Failed to flush tracking on shutdown")
+    }
+    try {
+        services.metrics.close()
+    } catch (err) {
+        logger.error({ err }, "Failed to close metrics on shutdown")
+    }
+    process.exit(0)
+}
+process.on("SIGTERM", shutdown)
+process.on("SIGINT", shutdown)
 
 logger.info(
     { port: PORT, url: `http://127.0.0.1:${PORT}` },

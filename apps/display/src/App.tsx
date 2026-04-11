@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { useEffect } from "react"
 import { PlatformProvider } from "@volley/platform-sdk/react"
 import { SceneRouter } from "./components/SceneRouter"
+import { ErrorBoundary } from "./components/ErrorBoundary"
 import { VGFDisplayProvider } from "./providers/VGFDisplayProvider"
 import { detectPlatform, isTV } from "./utils/detectPlatform"
 import { ensureLocalHubSessionId, GAME_CONSTANTS } from "@hello-weekend/shared"
@@ -59,10 +60,12 @@ export function App() {
     useBackButtonClose()
 
     return (
-        <MaybePlatformProvider>
-            <VGFDisplayProvider>
-                <SceneRouter />
-            </VGFDisplayProvider>
-        </MaybePlatformProvider>
+        <ErrorBoundary>
+            <MaybePlatformProvider>
+                <VGFDisplayProvider>
+                    <SceneRouter />
+                </VGFDisplayProvider>
+            </MaybePlatformProvider>
+        </ErrorBoundary>
     )
 }

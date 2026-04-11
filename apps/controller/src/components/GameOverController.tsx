@@ -2,6 +2,7 @@
  * Game Over phase controller — shows final score and a Play Again button.
  */
 import { useStateSync, useDispatchThunk } from "../hooks/useVGFState"
+import { trackButtonPressed } from "../tracking"
 
 export function GameOverController() {
     const state = useStateSync()
@@ -11,6 +12,7 @@ export function GameOverController() {
     const totalQuestions = (state as any)?.totalQuestions ?? 0
 
     const handlePlayAgain = () => {
+        trackButtonPressed("play-again", "gameOver")
         try {
             dispatchThunk("TRANSITION_TO_PHASE", "lobby")
         } catch (err) {

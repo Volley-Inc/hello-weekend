@@ -2,11 +2,13 @@
  * Lobby phase controller — shows connection status and a Start Game button.
  */
 import { useDispatchThunk } from "../hooks/useVGFState"
+import { trackButtonPressed } from "../tracking"
 
 export function LobbyController() {
     const dispatchThunk = useDispatchThunk()
 
     const handleStartGame = () => {
+        trackButtonPressed("start-game", "lobby")
         try {
             dispatchThunk("START_GAME", {})
         } catch (err) {

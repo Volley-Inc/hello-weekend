@@ -15,6 +15,7 @@
 import { useState, useRef, useEffect, useCallback } from "react"
 import { GAME_CONSTANTS } from "@hello-weekend/shared"
 import { useStateSync, useDispatchThunk } from "../hooks/useVGFState"
+import { trackButtonPressed } from "../tracking"
 
 // Dynamic import — resolved once, cached for subsequent renders
 let recognitionSdk: any = null
@@ -112,6 +113,7 @@ export function PlayingController() {
 
     const startRecording = useCallback(async () => {
         if (!recognitionSdk || isRecording) return
+        trackButtonPressed("hold-to-speak", "playing")
 
         const { createClientWithBuilder, RecognitionContextTypeV1, AudioEncoding, Language } =
             recognitionSdk
@@ -217,6 +219,7 @@ export function PlayingController() {
         (e: React.FormEvent) => {
             e.preventDefault()
             if (!textInput.trim()) return
+            trackButtonPressed("submit-answer", "playing")
 
             try {
                 dispatchThunk("PROCESS_TRANSCRIPTION", {
