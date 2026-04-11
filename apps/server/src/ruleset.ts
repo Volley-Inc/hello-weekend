@@ -26,7 +26,7 @@ export function createGameRuleset(
         actions: {},
         reducers: globalReducers,
         thunks: {
-            TRANSITION_TO_PHASE: createTransitionToPhaseThunk(),
+            TRANSITION_TO_PHASE: createTransitionToPhaseThunk(services),
             START_GAME: createStartGameThunk(services),
             PROCESS_TRANSCRIPTION: createProcessTranscriptionThunk(services),
         },

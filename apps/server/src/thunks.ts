@@ -28,9 +28,18 @@ interface ThunkContext {
  * TRANSITION_TO_PHASE — WoF pattern: dispatches SET_NEXT_PHASE.
  * endIf checks hasNextPhase, next returns nextPhase.
  */
-export function createTransitionToPhaseThunk(_services?: GameServices) {
+export function createTransitionToPhaseThunk(services?: GameServices) {
     return async (ctx: ThunkContext, targetPhase: unknown) => {
-        ctx.dispatch("SET_NEXT_PHASE", { targetPhase: targetPhase as string })
+        const state = ctx.getState()
+        const fromPhase = state.phase ?? "unknown"
+        const toPhase = targetPhase as string
+        services?.tracking.trackPhaseTransition(
+            ctx.getSessionId(),
+            GAME_CONSTANTS.GAME_ID,
+            fromPhase,
+            toPhase,
+        )
+        ctx.dispatch("SET_NEXT_PHASE", { targetPhase: toPhase })
     }
 }
 
@@ -48,7 +57,14 @@ export function createStartGameThunk(services: GameServices) {
             questions,
             currentAnswer: questions[0].answer,
             currentKeywords: questions[0].keywords,
+            startedAt: Date.now(),
         })
+
+        const gameId = GAME_CONSTANTS.GAME_ID
+        services.tracking.trackGameStart(sessionId, gameId, "lobby", 1)
+        services.tracking.trackControllerConnected(sessionId, "controller")
+        services.metrics.gaugeActiveSessions(gameId, 1)
+        services.metrics.gaugeConnectedClients(gameId, "controller", 1)
 
         ctx.dispatch("SET_CONTROLLER_CONNECTED", { connected: true })
         ctx.dispatch("SET_QUESTION", {
@@ -90,6 +106,8 @@ export function createProcessTranscriptionThunk(services: GameServices) {
 
         const newScore = isCorrect ? state.score + 1 : state.score
 
+        services.tracking.trackQuestionAnswered(sessionId, state.questionIndex, isCorrect)
+
         ctx.dispatch("SUBMIT_ANSWER", {
             text,
             correct: isCorrect,
@@ -99,7 +117,19 @@ export function createProcessTranscriptionThunk(services: GameServices) {
         // Advance to next question or end game
         const nextIndex = state.questionIndex + 1
         if (nextIndex >= state.totalQuestions) {
-            // Game over
+            // Game over — compute duration from session start
+            const duration = serverState.startedAt
+                ? Date.now() - serverState.startedAt
+                : 0
+            const gameId = GAME_CONSTANTS.GAME_ID
+            services.tracking.trackGameEnd(
+                sessionId,
+                gameId,
+                duration,
+                nextIndex,
+                isCorrect ? "completed_correct" : "completed_incorrect",
+            )
+            services.metrics.gaugeActiveSessions(gameId, 0)
             ctx.dispatch("SET_NEXT_PHASE", { targetPhase: "gameOver" })
         } else {
             // Next question

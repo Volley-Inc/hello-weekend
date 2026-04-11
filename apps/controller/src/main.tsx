@@ -11,6 +11,16 @@
  */
 import { createRoot } from "react-dom/client"
 import { App } from "./App"
+import { initDatadog } from "./datadog"
+import { initTracking, trackGameSessionStart } from "./tracking"
+import { getSessionIdFromUrl } from "./utils/params"
+
+initDatadog()
+initTracking()
+
+// Track controller session start (once per page load)
+const controllerSessionId = getSessionIdFromUrl() ?? ""
+if (controllerSessionId) trackGameSessionStart(controllerSessionId, "controller")
 
 // Suppress DispatchTimeoutError from unhandled promise rejections
 window.addEventListener("unhandledrejection", (event) => {

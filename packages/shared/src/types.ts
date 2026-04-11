@@ -33,6 +33,7 @@ export interface ServerOnlyState {
     questions: Question[]
     currentAnswer: string
     currentKeywords: string[]
+    startedAt?: number
 }
 
 export interface Question {

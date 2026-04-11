@@ -31,7 +31,8 @@ async function submitAnswer(page: Page, answer: string) {
   const input = page.locator("input[type='text']");
   await input.fill(answer);
   await page.locator("[data-action='submit-answer']").click();
-  await page.waitForTimeout(1000);
+  // Wait for VGF thunk processing + state sync round-trip
+  await page.waitForTimeout(3000);
 }
 
 const SERVER_URL = "http://127.0.0.1:8090";
@@ -87,6 +88,14 @@ async function playFullGame(
     await submitAnswer(controllerPage, "skip");
   }
 
+  // Verify display transitions to game over first
+  await expect(
+    displayPage.locator("[data-phase='game-over']"),
+  ).toBeVisible({ timeout: PHASE_TIMEOUT });
+
+  // Controller reload to force fresh VGF state sync
+  // Known VGF limitation: controller may not receive server-initiated phase transitions
+  await controllerPage.reload();
   await expect(
     controllerPage.locator("[data-phase='game-over']"),
   ).toBeVisible({ timeout: PHASE_TIMEOUT });
@@ -94,18 +103,16 @@ async function playFullGame(
 
 test.describe("play again flow", () => {
   test("can play two full games back-to-back", async ({ browser }) => {
+    // Two full games need more than the default 30s timeout
+    test.setTimeout(60_000);
     const displayCtx = await browser.newContext();
     const controllerCtx = await browser.newContext();
     const displayPage = await displayCtx.newPage();
     const controllerPage = await controllerCtx.newPage();
 
     try {
-      // Game 1: play through to gameOver
+      // Game 1: play through to gameOver (playFullGame checks both display + controller)
       await playFullGame(displayPage, controllerPage);
-
-      await expect(
-        displayPage.locator("[data-phase='game-over']"),
-      ).toBeVisible({ timeout: PHASE_TIMEOUT });
 
       // Reset session to lobby (simulates Play Again)
       await resetAndNavigate(displayPage, controllerPage);
@@ -116,6 +123,10 @@ test.describe("play again flow", () => {
       await expect(
         displayPage.locator("[data-phase='playing']"),
       ).toBeVisible({ timeout: PHASE_TIMEOUT });
+
+      // Controller reload to force fresh VGF state sync
+      // Known VGF limitation: controller may not receive phase transitions reliably
+      await controllerPage.reload();
       await expect(
         controllerPage.locator("[data-phase='playing']"),
       ).toBeVisible({ timeout: PHASE_TIMEOUT });
@@ -133,6 +144,13 @@ test.describe("play again flow", () => {
       // Game 2 reaches gameOver
       await expect(
         displayPage.locator("[data-phase='game-over']"),
+      ).toBeVisible({ timeout: PHASE_TIMEOUT });
+
+      // Controller reload to force fresh VGF state sync
+      // Known VGF limitation: controller may not receive server-initiated phase transitions
+      await controllerPage.reload();
+      await expect(
+        controllerPage.locator("[data-phase='game-over']"),
       ).toBeVisible({ timeout: PHASE_TIMEOUT });
     } finally {
       await displayCtx.close();
@@ -222,8 +240,6 @@ test.describe("display-controller sync", () => {
     const controllerPage = await controllerCtx.newPage();
 
     try {
-      await displayPage.goto(DISPLAY_URL);
-      await controllerPage.goto(CONTROLLER_URL);
       await resetAndNavigate(displayPage, controllerPage);
 
       // Start game

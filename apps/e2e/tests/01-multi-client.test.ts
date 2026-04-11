@@ -56,5 +56,10 @@ test("1 display + 4 controllers connect, all visible on display", async ({ brows
       await ctx.close();
     }
     await displayContext.close();
+
+    // Reset session after test so subsequent tests get a clean lobby state.
+    // VGF disconnect timeouts (15-30s) can leave stale session state.
+    await fetch("http://127.0.0.1:8090/api/reset-session", { method: "POST" });
+    await new Promise((r) => setTimeout(r, 2000));
   }
 });

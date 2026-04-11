@@ -1,5 +1,14 @@
 import { createRoot } from "react-dom/client"
 import { App } from "./App"
+import { initDatadog } from "./datadog"
+import { initTracking, trackGameSessionStart } from "./tracking"
+
+initDatadog()
+initTracking()
+
+// Track display session start (once per page load)
+const displaySessionId = new URLSearchParams(window.location.search).get("sessionId") ?? ""
+if (displaySessionId) trackGameSessionStart(displaySessionId, "display")
 
 // Signal VWR that this iframe is ready. Must fire early and unconditionally —
 // PlatformProvider's built-in ready event may never fire if auth fails (401 on
