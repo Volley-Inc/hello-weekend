@@ -125,8 +125,16 @@ setInterval(ensureDevSession, 2000)
 // Graceful shutdown — flush analytics and close metrics
 async function shutdown() {
     logger.info("Shutting down…")
-    await services.tracking.flush()
-    services.metrics.close()
+    try {
+        await services.tracking.flush()
+    } catch (err) {
+        logger.error({ err }, "Failed to flush tracking on shutdown")
+    }
+    try {
+        services.metrics.close()
+    } catch (err) {
+        logger.error({ err }, "Failed to close metrics on shutdown")
+    }
     process.exit(0)
 }
 process.on("SIGTERM", shutdown)
