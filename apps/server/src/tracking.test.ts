@@ -34,11 +34,11 @@ describe("TrackingService", () => {
         })
 
         it("trackGameStart does not throw", () => {
-            expect(() => service.trackGameStart("s1", "g1", "lobby", 1)).not.toThrow()
+            expect(() => service.trackGameStart("s1", "g1", "lobby", 1, 1)).not.toThrow()
         })
 
         it("trackGameEnd does not throw", () => {
-            expect(() => service.trackGameEnd("s1", "g1", 5000, 3, "completed_correct")).not.toThrow()
+            expect(() => service.trackGameEnd("s1", "g1", 5000, 3, "completed_correct", 1)).not.toThrow()
         })
 
         it("trackSessionStart does not throw", () => {
@@ -74,7 +74,7 @@ describe("TrackingService", () => {
         })
 
         it("does not call Analytics track", () => {
-            service.trackGameStart("s1", "g1", "lobby", 1)
+            service.trackGameStart("s1", "g1", "lobby", 1, 1)
             service.trackSessionStart("s1", "alexa", "voice")
             expect(mockTrack).not.toHaveBeenCalled()
         })
@@ -95,18 +95,18 @@ describe("TrackingService", () => {
         // -- Correct event names ------------------------------------------
 
         it('trackGameStart sends "Game Instance Start"', () => {
-            service.trackGameStart("s1", "hello-weekend", "lobby", 2)
+            service.trackGameStart("s1", "hello-weekend", "lobby", 2, 1)
             expect(mockTrack).toHaveBeenCalledWith(
                 expect.objectContaining({
                     event: "Game Instance Start",
                     anonymousId: "s1",
-                    properties: { gameId: "hello-weekend", phase: "lobby", playerCount: 2 },
+                    properties: { gameId: "hello-weekend", phase: "lobby", playerCount: 2, gameInstance: 1 },
                 }),
             )
         })
 
         it('trackGameEnd sends "Game Instance End"', () => {
-            service.trackGameEnd("s1", "hello-weekend", 5000, 5, "completed_correct")
+            service.trackGameEnd("s1", "hello-weekend", 5000, 5, "completed_correct", 1)
             expect(mockTrack).toHaveBeenCalledWith(
                 expect.objectContaining({
                     event: "Game Instance End",
@@ -116,6 +116,7 @@ describe("TrackingService", () => {
                         duration: 5000,
                         phasesCompleted: 5,
                         outcome: "completed_correct",
+                        gameInstance: 1,
                     },
                 }),
             )
@@ -164,20 +165,20 @@ describe("TrackingService", () => {
         // -- Idempotent deduplication (SHA-256 messageId) -----------------
 
         it("produces deterministic messageId for same session+event+index", () => {
-            service.trackGameStart("s1", "g1", "lobby", 1)
-            service.trackGameStart("s1", "g1", "lobby", 1)
+            service.trackGameStart("s1", "g1", "lobby", 1, 1)
+            service.trackGameStart("s1", "g1", "lobby", 1, 1)
 
             const calls = mockTrack.mock.calls
             expect(calls).toHaveLength(2)
             expect(calls[0][0].messageId).toBe(calls[1][0].messageId)
             expect(calls[0][0].messageId).toBe(
-                expectedMessageId("s1", "Game Instance Start", "0"),
+                expectedMessageId("s1", "Game Instance Start", 1),
             )
         })
 
         it("produces different messageId for different sessions", () => {
-            service.trackGameStart("s1", "g1", "lobby", 1)
-            service.trackGameStart("s2", "g1", "lobby", 1)
+            service.trackGameStart("s1", "g1", "lobby", 1, 1)
+            service.trackGameStart("s2", "g1", "lobby", 1, 1)
 
             const [call1, call2] = mockTrack.mock.calls
             expect(call1[0].messageId).not.toBe(call2[0].messageId)

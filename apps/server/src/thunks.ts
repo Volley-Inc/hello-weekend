@@ -52,16 +52,19 @@ export function createStartGameThunk(services: GameServices) {
         const sessionId = ctx.getSessionId()
         const questions = getRandomQuestions(GAME_CONSTANTS.QUESTIONS_PER_ROUND)
 
+        const gameInstance = services.tracking.nextGameInstance()
+
         // Store server-only state
         services.serverState.set(sessionId, {
             questions,
             currentAnswer: questions[0].answer,
             currentKeywords: questions[0].keywords,
             startedAt: Date.now(),
+            gameInstance,
         })
 
         const gameId = GAME_CONSTANTS.GAME_ID
-        services.tracking.trackGameStart(sessionId, gameId, "lobby", 1)
+        services.tracking.trackGameStart(sessionId, gameId, "lobby", 1, gameInstance)
         services.tracking.trackControllerConnected(sessionId, "controller")
         services.metrics.gaugeActiveSessions(gameId, 1)
         services.metrics.gaugeConnectedClients(gameId, "controller", 1)
@@ -128,6 +131,7 @@ export function createProcessTranscriptionThunk(services: GameServices) {
                 duration,
                 nextIndex,
                 isCorrect ? "completed_correct" : "completed_incorrect",
+                serverState.gameInstance ?? 0,
             )
             services.metrics.gaugeActiveSessions(gameId, 0)
             ctx.dispatch("SET_NEXT_PHASE", { targetPhase: "gameOver" })

@@ -18,10 +18,16 @@ function makeMessageId(sessionId: string, eventName: string, index: string | num
 
 export class TrackingService {
     private analytics: Analytics | null
+    private gameInstanceCounter = 0
 
     constructor() {
         const writeKey = process.env.SEGMENT_WRITE_KEY
         this.analytics = writeKey ? new Analytics({ writeKey }) : null
+    }
+
+    /** Increment and return a per-instance game counter for dedup keys. */
+    nextGameInstance(): number {
+        return ++this.gameInstanceCounter
     }
 
     // -- Game lifecycle ------------------------------------------------
@@ -31,12 +37,13 @@ export class TrackingService {
         gameId: string,
         phase: string,
         playerCount: number,
+        gameInstance: number,
     ): void {
         this.analytics?.track({
             anonymousId: sessionId,
             event: "Game Instance Start",
-            properties: { gameId, phase, playerCount },
-            messageId: makeMessageId(sessionId, "Game Instance Start", "0"),
+            properties: { gameId, phase, playerCount, gameInstance },
+            messageId: makeMessageId(sessionId, "Game Instance Start", gameInstance),
         })
     }
 
@@ -46,12 +53,13 @@ export class TrackingService {
         duration: number,
         phasesCompleted: number,
         outcome: string,
+        gameInstance: number,
     ): void {
         this.analytics?.track({
             anonymousId: sessionId,
             event: "Game Instance End",
-            properties: { gameId, duration, phasesCompleted, outcome },
-            messageId: makeMessageId(sessionId, "Game Instance End", "0"),
+            properties: { gameId, duration, phasesCompleted, outcome, gameInstance },
+            messageId: makeMessageId(sessionId, "Game Instance End", gameInstance),
         })
     }
 

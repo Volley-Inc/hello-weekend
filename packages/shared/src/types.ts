@@ -34,6 +34,7 @@ export interface ServerOnlyState {
     currentAnswer: string
     currentKeywords: string[]
     startedAt?: number
+    gameInstance?: number
 }
 
 export interface Question {

@@ -16,7 +16,9 @@ vi.mock("./questions", () => ({
 }))
 
 function createMockTracking() {
+    let counter = 0
     return {
+        nextGameInstance: vi.fn(() => ++counter),
         trackGameStart: vi.fn(),
         trackGameEnd: vi.fn(),
         trackSessionStart: vi.fn(),
@@ -87,6 +89,7 @@ describe("START_GAME thunk integration", () => {
             GAME_CONSTANTS.GAME_ID,
             "lobby",
             1,
+            expect.any(Number),
         )
     })
 
@@ -195,6 +198,7 @@ describe("PROCESS_TRANSCRIPTION thunk integration", () => {
             expect.any(Number),
             5,
             "completed_correct",
+            expect.any(Number),
         )
         // Duration should be approximately 10s
         const duration = mockTracking.trackGameEnd.mock.calls[0][2]
@@ -220,6 +224,7 @@ describe("PROCESS_TRANSCRIPTION thunk integration", () => {
             expect.any(Number),
             5,
             "completed_incorrect",
+            expect.any(Number),
         )
     })
 
