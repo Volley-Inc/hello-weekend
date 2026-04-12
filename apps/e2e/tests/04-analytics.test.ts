@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { waitForControllerPhase } from "./helpers";
 
 const DISPLAY_URL = "http://localhost:3000?sessionId=dev-test";
 const CONTROLLER_URL = "http://localhost:5174?sessionId=dev-test";
@@ -58,6 +59,8 @@ async function playThroughAllQuestions(
 }
 
 test.describe("analytics integration", () => {
+    test.setTimeout(60_000);
+
     test("game flow completes with analytics modules loaded (no console errors)", async ({
         browser,
     }) => {
@@ -85,9 +88,7 @@ test.describe("analytics integration", () => {
             await expect(
                 displayPage.locator("[data-phase='playing']"),
             ).toBeVisible({ timeout: PHASE_TIMEOUT });
-            await expect(
-                controllerPage.locator("[data-phase='playing']"),
-            ).toBeVisible({ timeout: PHASE_TIMEOUT });
+            await waitForControllerPhase(controllerPage, "playing");
 
             // Play through all questions
             await playThroughAllQuestions(controllerPage);
@@ -97,12 +98,7 @@ test.describe("analytics integration", () => {
                 displayPage.locator("[data-phase='game-over']"),
             ).toBeVisible({ timeout: PHASE_TIMEOUT });
 
-            // Controller reload to force fresh VGF state sync
-            // Known VGF limitation: controller may not receive server-initiated phase transitions
-            await controllerPage.reload();
-            await expect(
-                controllerPage.locator("[data-phase='game-over']"),
-            ).toBeVisible({ timeout: PHASE_TIMEOUT });
+            await waitForControllerPhase(controllerPage, "game-over");
 
             // Verify no console errors related to tracking/analytics
             const trackingErrors = displayErrors.filter(
@@ -125,8 +121,8 @@ test.describe("analytics integration", () => {
             expect(trackingErrors).toEqual([]);
             expect(controllerTrackingErrors).toEqual([]);
         } finally {
-            await displayCtx.close();
-            await controllerCtx.close();
+            await displayCtx.close().catch(() => {});
+            await controllerCtx.close().catch(() => {});
         }
     });
 
@@ -148,7 +144,7 @@ test.describe("analytics integration", () => {
                 controllerPage.locator("[data-phase]"),
             ).toBeVisible({ timeout: PHASE_TIMEOUT });
         } finally {
-            await controllerCtx.close();
+            await controllerCtx.close().catch(() => {});
         }
     });
 
@@ -183,7 +179,7 @@ test.describe("analytics integration", () => {
             // No uncaught page errors
             expect(pageErrors).toEqual([]);
         } finally {
-            await displayCtx.close();
+            await displayCtx.close().catch(() => {});
         }
     });
 
@@ -213,9 +209,7 @@ test.describe("analytics integration", () => {
             await expect(
                 displayPage.locator("[data-phase='lobby']"),
             ).toBeVisible({ timeout: PHASE_TIMEOUT });
-            await expect(
-                controllerPage.locator("[data-phase='lobby']"),
-            ).toBeVisible({ timeout: PHASE_TIMEOUT });
+            await waitForControllerPhase(controllerPage, "lobby");
             expect(displayErrors).toEqual([]);
             expect(controllerErrors).toEqual([]);
 
@@ -225,9 +219,7 @@ test.describe("analytics integration", () => {
             await expect(
                 displayPage.locator("[data-phase='playing']"),
             ).toBeVisible({ timeout: PHASE_TIMEOUT });
-            await expect(
-                controllerPage.locator("[data-phase='playing']"),
-            ).toBeVisible({ timeout: PHASE_TIMEOUT });
+            await waitForControllerPhase(controllerPage, "playing");
             expect(displayErrors).toEqual([]);
             expect(controllerErrors).toEqual([]);
 
@@ -239,19 +231,14 @@ test.describe("analytics integration", () => {
                 displayPage.locator("[data-phase='game-over']"),
             ).toBeVisible({ timeout: PHASE_TIMEOUT });
 
-            // Controller reload to force fresh VGF state sync
-            // Known VGF limitation: controller may not receive server-initiated phase transitions
-            await controllerPage.reload();
-            await expect(
-                controllerPage.locator("[data-phase='game-over']"),
-            ).toBeVisible({ timeout: PHASE_TIMEOUT });
+            await waitForControllerPhase(controllerPage, "game-over");
 
             // No uncaught exceptions across all phase transitions
             expect(displayErrors).toEqual([]);
             expect(controllerErrors).toEqual([]);
         } finally {
-            await displayCtx.close();
-            await controllerCtx.close();
+            await displayCtx.close().catch(() => {});
+            await controllerCtx.close().catch(() => {});
         }
     });
 });

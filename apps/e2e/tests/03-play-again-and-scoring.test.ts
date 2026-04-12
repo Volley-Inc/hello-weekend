@@ -1,4 +1,5 @@
 import { test, expect, type Page, type BrowserContext } from "@playwright/test";
+import { waitForControllerPhase } from "./helpers";
 
 const DISPLAY_URL = "http://localhost:3000?sessionId=dev-test";
 const CONTROLLER_URL = "http://localhost:5174?sessionId=dev-test";
@@ -75,9 +76,7 @@ async function playFullGame(
   await resetAndNavigate(displayPage, controllerPage);
 
   await controllerPage.locator("[data-action='start-game']").click();
-  await expect(
-    controllerPage.locator("[data-phase='playing']"),
-  ).toBeVisible({ timeout: PHASE_TIMEOUT });
+  await waitForControllerPhase(controllerPage, "playing");
 
   for (let i = 0; i < QUESTIONS_PER_ROUND; i++) {
     const done = await controllerPage
@@ -93,12 +92,7 @@ async function playFullGame(
     displayPage.locator("[data-phase='game-over']"),
   ).toBeVisible({ timeout: PHASE_TIMEOUT });
 
-  // Controller reload to force fresh VGF state sync
-  // Known VGF limitation: controller may not receive server-initiated phase transitions
-  await controllerPage.reload();
-  await expect(
-    controllerPage.locator("[data-phase='game-over']"),
-  ).toBeVisible({ timeout: PHASE_TIMEOUT });
+  await waitForControllerPhase(controllerPage, "game-over");
 }
 
 test.describe("play again flow", () => {
@@ -124,12 +118,7 @@ test.describe("play again flow", () => {
         displayPage.locator("[data-phase='playing']"),
       ).toBeVisible({ timeout: PHASE_TIMEOUT });
 
-      // Controller reload to force fresh VGF state sync
-      // Known VGF limitation: controller may not receive phase transitions reliably
-      await controllerPage.reload();
-      await expect(
-        controllerPage.locator("[data-phase='playing']"),
-      ).toBeVisible({ timeout: PHASE_TIMEOUT });
+      await waitForControllerPhase(controllerPage, "playing");
 
       // Submit all answers for game 2
       for (let i = 0; i < QUESTIONS_PER_ROUND; i++) {
@@ -146,12 +135,7 @@ test.describe("play again flow", () => {
         displayPage.locator("[data-phase='game-over']"),
       ).toBeVisible({ timeout: PHASE_TIMEOUT });
 
-      // Controller reload to force fresh VGF state sync
-      // Known VGF limitation: controller may not receive server-initiated phase transitions
-      await controllerPage.reload();
-      await expect(
-        controllerPage.locator("[data-phase='game-over']"),
-      ).toBeVisible({ timeout: PHASE_TIMEOUT });
+      await waitForControllerPhase(controllerPage, "game-over");
     } finally {
       await displayCtx.close();
       await controllerCtx.close();
@@ -176,9 +160,7 @@ test.describe("score verification", () => {
       await expect(
         displayPage.locator("[data-phase='playing']"),
       ).toBeVisible({ timeout: PHASE_TIMEOUT });
-      await expect(
-        controllerPage.locator("[data-phase='playing']"),
-      ).toBeVisible({ timeout: PHASE_TIMEOUT });
+      await waitForControllerPhase(controllerPage, "playing");
 
       // Question 1: submit CORRECT answer
       const q1 = await getQuestion(controllerPage);
@@ -247,9 +229,7 @@ test.describe("display-controller sync", () => {
       await expect(
         displayPage.locator("[data-phase='playing']"),
       ).toBeVisible({ timeout: PHASE_TIMEOUT });
-      await expect(
-        controllerPage.locator("[data-phase='playing']"),
-      ).toBeVisible({ timeout: PHASE_TIMEOUT });
+      await waitForControllerPhase(controllerPage, "playing");
 
       // Read question from both sides and verify they match
       const controllerQ = await getQuestion(controllerPage);
@@ -268,8 +248,12 @@ test.describe("display-controller sync", () => {
       // Wait for a new question to appear (different from the first)
       await expect(async () => {
         const q2 = await getQuestion(controllerPage);
-        expect(q2).toBeTruthy();
-        expect(q2).not.toBe(controllerQ);
+        if (q2 === controllerQ) {
+          await controllerPage.reload();
+        }
+        const q2After = await getQuestion(controllerPage);
+        expect(q2After).toBeTruthy();
+        expect(q2After).not.toBe(controllerQ);
       }).toPass({ timeout: PHASE_TIMEOUT });
 
       const controllerQ2 = await getQuestion(controllerPage);

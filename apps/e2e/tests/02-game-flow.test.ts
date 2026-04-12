@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { waitForControllerPhase } from "./helpers";
 
 const DISPLAY_URL = "http://localhost:3000?sessionId=dev-test";
 const CONTROLLER_URL = "http://localhost:5174?sessionId=dev-test";
@@ -40,9 +41,7 @@ test("full game flow: lobby → playing → game over", async ({ browser }) => {
     await expect(displayPage.locator("[data-phase='playing']")).toBeVisible({
       timeout: PHASE_TIMEOUT,
     });
-    await expect(controllerPage.locator("[data-phase='playing']")).toBeVisible({
-      timeout: PHASE_TIMEOUT,
-    });
+    await waitForControllerPhase(controllerPage, "playing");
 
     // 5. Submit answers for all questions via the text input fallback
     for (let i = 0; i < QUESTIONS_PER_ROUND; i++) {
@@ -73,13 +72,7 @@ test("full game flow: lobby → playing → game over", async ({ browser }) => {
     });
 
     // 7. Verify controller transitions to game over
-    //    Known VGF limitation: controller may not receive server-initiated phase
-    //    transitions via state broadcast (see learning 018). Reload the controller
-    //    page to force a fresh state sync.
-    await controllerPage.reload();
-    await expect(controllerPage.locator("[data-phase='game-over']")).toBeVisible({
-      timeout: PHASE_TIMEOUT,
-    });
+    await waitForControllerPhase(controllerPage, "game-over");
   } finally {
     await displayContext.close();
     await controllerContext.close();
